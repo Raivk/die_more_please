@@ -39,6 +39,15 @@ public class GameController : MonoBehaviour {
         SceneManager.LoadScene(0);
     }
 
+    IEnumerator colorLerp(SpriteRenderer toChange, Color start, Color togo)
+    {
+        for(int i = 0; i < 15; i++)
+        {
+            toChange.color = Color.Lerp(start, togo, ((float)i) / ((float)15));
+            yield return new WaitForSeconds(0.05f);
+        }
+    }
+
     // Use this for initialization
     void Start () {
         scores = new int[nbPlayers];
@@ -89,10 +98,66 @@ public class GameController : MonoBehaviour {
         {
             shaker.StartShake(shakeIntensity, shakeDuration);
         }
+        modifyWalls();
         handleDoors();
         for(int i = 0; i < nbDeath; i++)
         {
             incScore(player);
+        }
+    }
+
+    public void modifyWalls()
+    {
+        StopAllCoroutines();
+        GameObject[] walls = GameObject.FindGameObjectsWithTag("Ground");
+        Color newCol;
+        int r = Random.Range(0, 30);
+        if(r < 10)
+        {
+            r = Random.Range(0, 20);
+            if(r < 10)
+            {
+                newCol = new Color(0, 1, Random.Range(0.0f, 1.0f));
+            }
+            else
+            {
+                newCol = new Color(0, Random.Range(0.0f, 1.0f), 1);
+            }
+        }
+        else
+        {
+            if(r < 20)
+            {
+                r = Random.Range(0, 20);
+                if (r < 10)
+                {
+                    newCol = new Color(1, 0, Random.Range(0.0f, 1.0f));
+                }
+                else
+                {
+                    newCol = new Color(Random.Range(0.0f, 1.0f), 0, 1);
+                }
+            }
+            else
+            {
+                r = Random.Range(0, 20);
+                if (r < 10)
+                {
+                    newCol = new Color(Random.Range(0.0f, 1.0f), 1, 0);
+                }
+                else
+                {
+                    newCol = new Color(1, Random.Range(0.0f, 1.0f), 0);
+                }
+            }
+        }
+        foreach(GameObject wall in walls)
+        {
+            SpriteRenderer spr = wall.GetComponent<SpriteRenderer>();
+            if(spr != null)
+            {
+                StartCoroutine(colorLerp(spr, spr.color, newCol));
+            }
         }
     }
 
