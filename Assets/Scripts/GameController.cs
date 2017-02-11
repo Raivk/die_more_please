@@ -33,6 +33,8 @@ public class GameController : MonoBehaviour {
     public int shakeIntensity;
     public float shakeDuration;
 
+    public bool ended = false;
+
     IEnumerator endGame()
     {
         yield return new WaitForSeconds(secondsEndGame);
@@ -87,6 +89,7 @@ public class GameController : MonoBehaviour {
                         textVictory.text = "Player 2 won !";
                     }
                 }
+                ended = true;
                 StartCoroutine("endGame");
             }
         }
@@ -108,55 +111,58 @@ public class GameController : MonoBehaviour {
 
     public void modifyWalls()
     {
-        StopAllCoroutines();
-        GameObject[] walls = GameObject.FindGameObjectsWithTag("Ground");
-        Color newCol;
-        int r = Random.Range(0, 30);
-        if(r < 10)
+        if (!ended)
         {
-            r = Random.Range(0, 20);
-            if(r < 10)
-            {
-                newCol = new Color(0, 1, Random.Range(0.0f, 1.0f));
-            }
-            else
-            {
-                newCol = new Color(0, Random.Range(0.0f, 1.0f), 1);
-            }
-        }
-        else
-        {
-            if(r < 20)
+            StopAllCoroutines();
+            GameObject[] walls = GameObject.FindGameObjectsWithTag("Ground");
+            Color newCol;
+            int r = Random.Range(0, 30);
+            if (r < 10)
             {
                 r = Random.Range(0, 20);
                 if (r < 10)
                 {
-                    newCol = new Color(1, 0, Random.Range(0.0f, 1.0f));
+                    newCol = new Color(0, 1, Random.Range(0.0f, 1.0f));
                 }
                 else
                 {
-                    newCol = new Color(Random.Range(0.0f, 1.0f), 0, 1);
+                    newCol = new Color(0, Random.Range(0.0f, 1.0f), 1);
                 }
             }
             else
             {
-                r = Random.Range(0, 20);
-                if (r < 10)
+                if (r < 20)
                 {
-                    newCol = new Color(Random.Range(0.0f, 1.0f), 1, 0);
+                    r = Random.Range(0, 20);
+                    if (r < 10)
+                    {
+                        newCol = new Color(1, 0, Random.Range(0.0f, 1.0f));
+                    }
+                    else
+                    {
+                        newCol = new Color(Random.Range(0.0f, 1.0f), 0, 1);
+                    }
                 }
                 else
                 {
-                    newCol = new Color(1, Random.Range(0.0f, 1.0f), 0);
+                    r = Random.Range(0, 20);
+                    if (r < 10)
+                    {
+                        newCol = new Color(Random.Range(0.0f, 1.0f), 1, 0);
+                    }
+                    else
+                    {
+                        newCol = new Color(1, Random.Range(0.0f, 1.0f), 0);
+                    }
                 }
             }
-        }
-        foreach(GameObject wall in walls)
-        {
-            SpriteRenderer spr = wall.GetComponent<SpriteRenderer>();
-            if(spr != null)
+            foreach (GameObject wall in walls)
             {
-                StartCoroutine(colorLerp(spr, spr.color, newCol));
+                SpriteRenderer spr = wall.GetComponent<SpriteRenderer>();
+                if (spr != null)
+                {
+                    StartCoroutine(colorLerp(spr, spr.color, newCol));
+                }
             }
         }
     }

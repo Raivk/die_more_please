@@ -52,7 +52,7 @@ public class DoorController : MonoBehaviour {
         }
     }
 
-	private void close()
+	public void close()
     {
         openState = false;
         StopAllCoroutines();
@@ -61,7 +61,7 @@ public class DoorController : MonoBehaviour {
         col.enabled = true;
     }
 
-    private void open()
+    public void open()
     {
         openState = true;
         StopAllCoroutines();

@@ -26,10 +26,14 @@ public class MineSpawner : MonoBehaviour {
             lastChange = Time.time;
             if ((Random.Range(0, range)) < proba)
             {
-                GameObject go = (GameObject)Instantiate(mine_prefab, transform.position, transform.rotation);
-                    go.GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(force_range_min, force_range_max), Random.Range(force_range_min, force_range_max)), ForceMode2D.Impulse);
-                
+                Spawn();
             }
         }
 	}
+
+    public void Spawn()
+    {
+        GameObject go = (GameObject)Instantiate(mine_prefab, transform.position, transform.rotation);
+        go.GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(force_range_min, force_range_max), Random.Range(force_range_min, force_range_max)), ForceMode2D.Impulse);
+    }
 }

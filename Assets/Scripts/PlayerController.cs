@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour {
 
     public float speed;
 
+    [HideInInspector]
+    public float eff_speed = 0f;
+
     public float jumpForce;
 
     private bool collideground = false;
@@ -31,6 +34,9 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject bloodSplat;
 
+    [HideInInspector]
+    public int nextInc = 1;
+
     private enum State
     {
         normal,
@@ -41,6 +47,7 @@ public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     private void Start () {
+        eff_speed = speed;
         state = State.normal;
         transform.position = spawner.position;
         rigidBod = GetComponent<Rigidbody2D>();
@@ -77,7 +84,7 @@ public class PlayerController : MonoBehaviour {
             anim.SetInteger("state", 0);
         }
 
-        this.rigidBod.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis(horizAxis) * speed, 0.8f),
+        this.rigidBod.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis(horizAxis) * eff_speed, 0.8f),
                                                     rigidBod.velocity.y);
         if (Input.GetButtonDown(jumpBt) && (state == State.normal || collideground))
         {
@@ -106,13 +113,13 @@ public class PlayerController : MonoBehaviour {
                 {
                     if (oc.isPlayer(playerNumber))
                     {
-                        respawn(1);
+                        respawn(nextInc);
                         oc.changeColor(playerNumber);
                     }
                 }
                 else
                 {
-                    respawn(1);
+                    respawn(nextInc);
                 }
             }
         }
@@ -147,12 +154,14 @@ public class PlayerController : MonoBehaviour {
     {
         if (activated)
         {
-            respawn(1);
+            respawn(nextInc);
         }
     }
 
     public void respawn(int nbDeath)
     {
+        nextInc = 1;
+        eff_speed = speed;
         Destroy((GameObject)Instantiate(bloodSplat, transform.position, transform.rotation),1f);
         ((GameObject)Instantiate(explosion_prefab, transform.position, transform.rotation)).layer = (11 - playerNumber);
         this.rigidBod.velocity = new Vector2(0, 0);
