@@ -21,9 +21,14 @@ public class PlayerController : MonoBehaviour {
 
     public int playerNumber;
 
+    private string _currentDirection;
+
+    public Animator anim;
+
     private enum State
     {
         normal,
+        running,
         jumping
     }
 
@@ -31,6 +36,7 @@ public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     private void Start () {
+        state = State.normal;
         transform.position = spawner.position;
         rigidBod = GetComponent<Rigidbody2D>();
 	}
@@ -42,12 +48,38 @@ public class PlayerController : MonoBehaviour {
 
     private void handleInput()
     {
+        if(Input.GetAxis(horizAxis) != 0 && state == State.normal)
+        {
+            state = State.running;
+            anim.SetInteger("state", 1);
+        }
+        else
+        {
+            if(state == State.running)
+            {
+                state = State.normal;
+                anim.SetInteger("state", 0);
+            }
+        }
+        if (Input.GetAxis(horizAxis) > 0)
+        {
+            changeDirection("right");
+        }
+        else
+        {
+            if(Input.GetAxis(horizAxis) < 0)
+            {
+                changeDirection("left");
+            }
+        }
+
         this.rigidBod.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis(horizAxis) * speed, 0.8f),
                                                     rigidBod.velocity.y);
-        if (Input.GetButtonDown(jumpBt) && (state == State.normal || collideground))
+        if (Input.GetButtonDown(jumpBt) && (state == State.normal || state == State.running || collideground))
         {
             state = State.jumping;
             rigidBod.AddForce(new Vector2(0f, jumpForce));
+            anim.SetInteger("state", 0);
         }
     }
 
@@ -58,6 +90,7 @@ public class PlayerController : MonoBehaviour {
             if (state == State.jumping)
             {
                 state = State.normal;
+                anim.SetInteger("state", 0);
             }
             collideground = true;
         }
@@ -65,7 +98,15 @@ public class PlayerController : MonoBehaviour {
         {
             if(collision.transform.tag == "Lethal")
             {
-                respawn();
+                ObstacleController oc = collision.collider.transform.GetComponent<ObstacleController>();
+                if(oc != null)
+                {
+                    if (oc.isPlayer(playerNumber))
+                    {
+                        respawn(1);
+                        oc.changeColor(playerNumber);
+                    }
+                }
             }
         }
     }
@@ -88,16 +129,42 @@ public class PlayerController : MonoBehaviour {
 
     private void OnBecameInvisible()
     {
-        respawn();
+        respawn(1);
     }
 
-    public void respawn()
+    public void respawn(int nbDeath)
     {
         this.rigidBod.velocity = new Vector2(0, 0);
-        gc.incScore(playerNumber);
+        gc.death(playerNumber, nbDeath);
         if(spawner != null)
         {
             this.transform.position = spawner.position;
         }
+    }
+
+
+
+
+
+    //--------------------------------------
+    // Flip player sprite for left/right walking
+    //--------------------------------------
+    void changeDirection(string direction)
+    {
+
+        if (_currentDirection != direction)
+        {
+            if (direction == "right")
+            {
+                transform.Rotate(0, 180, 0);
+                _currentDirection = "right";
+            }
+            else if (direction == "left")
+            {
+                transform.Rotate(0, -180, 0);
+                _currentDirection = "left";
+            }
+        }
+
     }
 }

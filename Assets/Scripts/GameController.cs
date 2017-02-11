@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 
@@ -21,6 +23,16 @@ public class GameController : MonoBehaviour {
     public Text textVictory;
 
     private bool isCounting = true;
+
+    public DoorController[] doors;
+
+    public float secondsEndGame;
+
+    IEnumerator endGame()
+    {
+        yield return new WaitForSeconds(secondsEndGame);
+        SceneManager.LoadScene(0);
+    }
 
     // Use this for initialization
     void Start () {
@@ -61,8 +73,17 @@ public class GameController : MonoBehaviour {
                         textVictory.text = "Player 2 won !";
                     }
                 }
-
+                StartCoroutine("endGame");
             }
+        }
+    }
+
+    public void death(int player, int nbDeath)
+    {
+        handleDoors();
+        for(int i = 0; i < nbDeath; i++)
+        {
+            incScore(player);
         }
     }
 
@@ -71,7 +92,32 @@ public class GameController : MonoBehaviour {
         if(player < nbPlayers && isCounting)
         {
             scores[player]++;
-            score_displays[player].text = "" + scores[player];
+            if(score_displays[player] != null)
+            {
+                score_displays[player].text = "" + scores[player];
+            }
+        }
+    }
+
+    public void handleDoors()
+    {
+        int halfNbDoors = ((int)(doors.Length / 2));
+        List<int> indices = new List<int>();
+        while (indices.Count < halfNbDoors)
+        {
+            int index = Random.Range(0, doors.Length);
+            if (indices.Count == 0 || !indices.Contains(index))
+            {
+                indices.Add(index);
+            }
+        }
+        for (int i = 0; i < indices.Count; i++)
+        {
+            int randomIndex = indices[i];
+            if(doors[randomIndex] != null)
+            {
+                doors[randomIndex].act();
+            }
         }
     }
 }
