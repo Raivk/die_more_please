@@ -28,7 +28,6 @@ public class PlayerController : MonoBehaviour {
     private enum State
     {
         normal,
-        running,
         jumping
     }
 
@@ -48,38 +47,30 @@ public class PlayerController : MonoBehaviour {
 
     private void handleInput()
     {
-        if(Input.GetAxis(horizAxis) != 0 && state == State.normal)
+        if (Input.GetAxisRaw(horizAxis) == -1)
         {
-            state = State.running;
             anim.SetInteger("state", 1);
-        }
-        else
-        {
-            if(state == State.running)
-            {
-                state = State.normal;
-                anim.SetInteger("state", 0);
-            }
-        }
-        if (Input.GetAxis(horizAxis) > 0)
-        {
             changeDirection("right");
         }
         else
         {
-            if(Input.GetAxis(horizAxis) < 0)
+            if(Input.GetAxisRaw(horizAxis) == 1)
             {
+                anim.SetInteger("state", 1);
                 changeDirection("left");
             }
+        }
+        if(Input.GetAxisRaw(horizAxis) == 0)
+        {
+            anim.SetInteger("state", 0);
         }
 
         this.rigidBod.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis(horizAxis) * speed, 0.8f),
                                                     rigidBod.velocity.y);
-        if (Input.GetButtonDown(jumpBt) && (state == State.normal || state == State.running || collideground))
+        if (Input.GetButtonDown(jumpBt) && (state == State.normal || collideground))
         {
             state = State.jumping;
             rigidBod.AddForce(new Vector2(0f, jumpForce));
-            anim.SetInteger("state", 0);
         }
     }
 
@@ -90,7 +81,6 @@ public class PlayerController : MonoBehaviour {
             if (state == State.jumping)
             {
                 state = State.normal;
-                anim.SetInteger("state", 0);
             }
             collideground = true;
         }
@@ -156,12 +146,12 @@ public class PlayerController : MonoBehaviour {
         {
             if (direction == "right")
             {
-                transform.Rotate(0, 180, 0);
+                transform.eulerAngles = new Vector3(0, 180, 0);
                 _currentDirection = "right";
             }
             else if (direction == "left")
             {
-                transform.Rotate(0, -180, 0);
+                transform.eulerAngles = new Vector3(0, 0, 0);
                 _currentDirection = "left";
             }
         }
