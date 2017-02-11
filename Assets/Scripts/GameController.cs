@@ -28,6 +28,11 @@ public class GameController : MonoBehaviour {
 
     public float secondsEndGame;
 
+    public ScreenShake shaker;
+
+    public int shakeIntensity;
+    public float shakeDuration;
+
     IEnumerator endGame()
     {
         yield return new WaitForSeconds(secondsEndGame);
@@ -80,6 +85,10 @@ public class GameController : MonoBehaviour {
 
     public void death(int player, int nbDeath)
     {
+        if (shaker != null)
+        {
+            shaker.StartShake(shakeIntensity, shakeDuration);
+        }
         handleDoors();
         for(int i = 0; i < nbDeath; i++)
         {

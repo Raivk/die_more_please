@@ -25,6 +25,12 @@ public class PlayerController : MonoBehaviour {
 
     public Animator anim;
 
+    public GameObject explosion_prefab;
+
+    private bool activated = true;
+
+    public GameObject bloodSplat;
+
     private enum State
     {
         normal,
@@ -49,18 +55,24 @@ public class PlayerController : MonoBehaviour {
     {
         if (Input.GetAxisRaw(horizAxis) == -1)
         {
-            anim.SetInteger("state", 1);
+            if(state != State.jumping)
+            {
+                anim.SetInteger("state", 1);
+            }
             changeDirection("right");
         }
         else
         {
             if(Input.GetAxisRaw(horizAxis) == 1)
             {
-                anim.SetInteger("state", 1);
+                if (state != State.jumping)
+                {
+                    anim.SetInteger("state", 1);
+                }
                 changeDirection("left");
             }
         }
-        if(Input.GetAxisRaw(horizAxis) == 0)
+        if(Input.GetAxisRaw(horizAxis) == 0 && state != State.jumping)
         {
             anim.SetInteger("state", 0);
         }
@@ -70,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown(jumpBt) && (state == State.normal || collideground))
         {
             state = State.jumping;
+            anim.SetInteger("state", 2);
             rigidBod.AddForce(new Vector2(0f, jumpForce));
         }
     }
@@ -97,7 +110,20 @@ public class PlayerController : MonoBehaviour {
                         oc.changeColor(playerNumber);
                     }
                 }
+                else
+                {
+                    respawn(1);
+                }
             }
+        }
+    }
+
+    private void OnParticleCollision(GameObject other)
+    {
+        Rigidbody2D rig = other.GetComponent<Rigidbody2D>();
+        if (rig != null)
+        {
+            Debug.Log("player");
         }
     }
 
@@ -119,17 +145,27 @@ public class PlayerController : MonoBehaviour {
 
     private void OnBecameInvisible()
     {
-        respawn(1);
+        if (activated)
+        {
+            respawn(1);
+        }
     }
 
     public void respawn(int nbDeath)
     {
+        Destroy((GameObject)Instantiate(bloodSplat, transform.position, transform.rotation),1f);
+        ((GameObject)Instantiate(explosion_prefab, transform.position, transform.rotation)).layer = (11 - playerNumber);
         this.rigidBod.velocity = new Vector2(0, 0);
         gc.death(playerNumber, nbDeath);
         if(spawner != null)
         {
             this.transform.position = spawner.position;
         }
+    }
+
+    void OnApplicationQuit()
+    {
+        activated = false;
     }
 
 

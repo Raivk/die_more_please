@@ -33,8 +33,23 @@ public class ObstacleController : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
-	void Start () {
+    private bool activated = true;
+
+    private void OnApplicationQuit()
+    {
+        activated = false;
+    }
+
+    private void OnBecameInvisible()
+    {
+        if (activated)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Use this for initialization
+    void Start () {
         state = State.neutral;
         StartCoroutine(swapColor(neutralColor));
 	}
@@ -45,6 +60,7 @@ public class ObstacleController : MonoBehaviour {
         if (col == 0)
         {
             state = State.p2;
+            gameObject.layer = 11;
             StartCoroutine(swapColor(p2Color));
         }
         else
@@ -52,11 +68,13 @@ public class ObstacleController : MonoBehaviour {
             if(col == 1)
             {
                 state = State.p1;
+                gameObject.layer = 10;
                 StartCoroutine(swapColor(p1Color));
             }
             else
             {
                 state = State.neutral;
+                gameObject.layer = 0;
                 StartCoroutine(swapColor(neutralColor));
             }
         }
