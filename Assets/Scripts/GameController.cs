@@ -43,12 +43,39 @@ public class GameController : MonoBehaviour {
 
     private bool menuActivated = false;
 
+    public AudioSource music;
+
+
+    IEnumerator changeLev(int level)
+    {
+        float fadeTime = Camera.main.GetComponent<Fading>().BeginFade(1);
+        StartCoroutine(FadeOut(music, fadeTime));
+        yield return new WaitForSeconds(fadeTime);
+        SceneManager.LoadScene(level);
+    }
+
+    public static IEnumerator FadeOut(AudioSource audioSource, float FadeTime)
+    {
+        float startVolume = audioSource.volume;
+
+        while (audioSource.volume > 0)
+        {
+            audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+
+            yield return null;
+        }
+
+        audioSource.Stop();
+        audioSource.volume = startVolume;
+    }
+
+
     public void stopGame()
     {
         GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
         GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
         Time.timeScale = 1;
-        SceneManager.LoadScene(1);
+        StartCoroutine(changeLev(1));
     }
 
     IEnumerator endGame()
@@ -56,7 +83,7 @@ public class GameController : MonoBehaviour {
         GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
         GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
         yield return new WaitForSeconds(secondsEndGame);
-        SceneManager.LoadScene(1);
+        StartCoroutine(changeLev(1));
     }
 
     IEnumerator colorLerp(SpriteRenderer toChange, Color start, Color togo)
