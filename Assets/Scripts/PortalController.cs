@@ -36,8 +36,11 @@ public class PortalController : MonoBehaviour {
             {
                 sc.StartShake(70, 0.1f);
             }
-            StartCoroutine(shine());
-            destination.StartCoroutine(destination.shine());
+            if(sprg != null)
+            {
+                StartCoroutine(shine());
+                destination.StartCoroutine(destination.shine());
+            }
             collision.collider.transform.position = destination.exit.position;
         }
     }
