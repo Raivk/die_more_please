@@ -39,7 +39,7 @@ public class ObstacleController : MonoBehaviour {
                 sp.color = Color.Lerp(from, togo, (((float)i) / ((float)nbTicks)));
                 try
                 {
-                    sp.GetComponent<SpriteGlow>().GlowColor = glow;
+                    sp.GetComponent<SpriteGlow>().GlowColor = Color.Lerp(from, glow, (((float)i) / ((float)nbTicks)));
                 }
                 catch
                 {

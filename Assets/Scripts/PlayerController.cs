@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour {
 
     public GameObject bloodSplat;
 
+    private float defaultAbber;
+
     [HideInInspector]
     public int nextInc = 1;
 
@@ -45,8 +47,29 @@ public class PlayerController : MonoBehaviour {
 
     private State state;
 
+    public UnityStandardAssets.ImageEffects.VignetteAndChromaticAberration abber;
+
+    IEnumerator abberation()
+    {
+        for (int i = 0; i < 15; i++)
+        {
+            abber.chromaticAberration += 0.25f;
+            yield return new WaitForSeconds(0.015f);
+        }
+        for (int i = 0; i < 15; i++)
+        {
+            abber.chromaticAberration -= 0.25f;
+            yield return new WaitForSeconds(0.015f);
+        }
+        abber.chromaticAberration = defaultAbber;
+    }
+
     // Use this for initialization
     private void Start () {
+        if(abber != null)
+        {
+            defaultAbber = abber.chromaticAberration;
+        }
         eff_speed = speed;
         state = State.normal;
         transform.position = spawner.position;
@@ -84,8 +107,12 @@ public class PlayerController : MonoBehaviour {
             anim.SetInteger("state", 0);
         }
 
+        //MOVE
         this.rigidBod.velocity = new Vector2(Mathf.Lerp(0, Input.GetAxis(horizAxis) * eff_speed, 0.8f),
                                                     rigidBod.velocity.y);
+        //END MOVE
+
+
         if (Input.GetButtonDown(jumpBt) && (state == State.normal || collideground))
         {
             state = State.jumping;
@@ -150,6 +177,11 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void deactivate()
+    {
+        activated = false;
+    }
+
     private void OnBecameInvisible()
     {
         if (activated)
@@ -160,6 +192,10 @@ public class PlayerController : MonoBehaviour {
 
     public void respawn(int nbDeath)
     {
+        if (abber != null && activated)
+        {
+            StartCoroutine(abberation());
+        }
         nextInc = 1;
         eff_speed = speed;
         Destroy((GameObject)Instantiate(bloodSplat, transform.position, transform.rotation),1f);

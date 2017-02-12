@@ -35,8 +35,14 @@ public class GameController : MonoBehaviour {
 
     public bool ended = false;
 
+    public TextBlinker tb;
+
+    private bool activated = false;
+
     IEnumerator endGame()
     {
+        GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
+        GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
         yield return new WaitForSeconds(secondsEndGame);
         SceneManager.LoadScene(0);
     }
@@ -68,6 +74,11 @@ public class GameController : MonoBehaviour {
         {
             timeLeft -= Time.deltaTime;
             timer.text = "" + Mathf.Floor(timeLeft / 60).ToString("00") + " : " + (timeLeft % 60).ToString("00");
+            if(timeLeft < 25 && !activated)
+            {
+                activated = true;
+                tb.activate();
+            }
             if (timeLeft < 0)
             {
                 isCounting = false;
