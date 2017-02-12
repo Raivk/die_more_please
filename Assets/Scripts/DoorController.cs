@@ -15,6 +15,10 @@ public class DoorController : MonoBehaviour {
 
     public Collider2D col;
 
+    public AudioSource Asource;
+
+    public AudioClip sound;
+
     IEnumerator closeAnim()
     {
         for(int i = 0; i < nbTicks; i++)
@@ -54,6 +58,8 @@ public class DoorController : MonoBehaviour {
 
 	public void close()
     {
+        Asource.Stop();
+        Asource.PlayOneShot(sound);
         openState = false;
         StopAllCoroutines();
         door.localScale = new Vector3(door.localScale.x, 0f, door.localScale.z);
@@ -63,6 +69,8 @@ public class DoorController : MonoBehaviour {
 
     public void open()
     {
+        Asource.Stop();
+        Asource.PlayOneShot(sound);
         openState = true;
         StopAllCoroutines();
         door.localScale = new Vector3(door.localScale.x, maxSize, door.localScale.z);

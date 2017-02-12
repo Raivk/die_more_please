@@ -13,6 +13,10 @@ public class PortalController : MonoBehaviour {
 
     public ScreenShake sc;
 
+    public AudioClip sound;
+
+    public AudioSource portalsource;
+
     IEnumerator shine()
     {
         for(int i = 0; i < 10; i++)
@@ -32,7 +36,16 @@ public class PortalController : MonoBehaviour {
     {
         if(collision.collider.gameObject.layer == 9 || collision.collider.gameObject.layer == 10 || collision.collider.gameObject.layer == 11)
         {
-            if(sc != null)
+            try
+            {
+                portalsource.Stop();
+                portalsource.PlayOneShot(sound);
+            }
+            catch
+            {
+                //NOTHING
+            }
+            if (sc != null)
             {
                 sc.StartShake(70, 0.1f);
             }

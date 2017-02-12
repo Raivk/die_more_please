@@ -39,12 +39,24 @@ public class GameController : MonoBehaviour {
 
     private bool activated = false;
 
+    public GameObject menuQuit;
+
+    private bool menuActivated = false;
+
+    public void stopGame()
+    {
+        GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
+        GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
+        Time.timeScale = 1;
+        SceneManager.LoadScene(1);
+    }
+
     IEnumerator endGame()
     {
         GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
         GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
         yield return new WaitForSeconds(secondsEndGame);
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     IEnumerator colorLerp(SpriteRenderer toChange, Color start, Color togo)
@@ -69,6 +81,23 @@ public class GameController : MonoBehaviour {
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            menuActivated = !menuActivated;
+            menuQuit.SetActive(menuActivated);
+            if (menuActivated)
+            {
+                GameObject.Find("p1").GetComponent<PlayerController>().deactivate();
+                GameObject.Find("p2").GetComponent<PlayerController>().deactivate();
+                Time.timeScale = 0;
+            }
+            else
+            {
+                GameObject.Find("p1").GetComponent<PlayerController>().activate();
+                GameObject.Find("p2").GetComponent<PlayerController>().activate();
+                Time.timeScale = 1;
+            }
+        }
         //TIMER
         if (isCounting)
         {

@@ -12,10 +12,14 @@ public class ExplosionController : MonoBehaviour
 
     public float explosion_radius;
 
+    private AudioSource mainSource;
+
     // Use this for initialization
     void Start()
     {
-        AudioSource.PlayClipAtPoint(sounds[Random.Range(0, sounds.Length)], Camera.main.transform.position);
+        mainSource = GameObject.Find("MainSourceExplosions").GetComponent<AudioSource>();
+        mainSource.Stop();
+        mainSource.PlayOneShot(sounds[Random.Range(0, sounds.Length)]);
         this.transform.rotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
         Destroy(gameObject, this.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length + delay);
     }

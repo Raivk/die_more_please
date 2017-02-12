@@ -19,6 +19,10 @@ public class BonusController : MonoBehaviour {
 
     private GameController gc;
 
+    public AudioClip sound;
+
+    private AudioSource mainSource;
+
     IEnumerator slow(PlayerController who)
     {
         who.eff_speed = who.speed * slow_factor;
@@ -37,6 +41,7 @@ public class BonusController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        mainSource = GameObject.Find("MainSourceClicks").GetComponent<AudioSource>();
         gc = GameObject.Find("HUD").GetComponent<GameController>();
         if(selected < sprites.Length)
         {
@@ -64,6 +69,14 @@ public class BonusController : MonoBehaviour {
 
     public void act(PlayerController who)
     {
+        try
+        {
+            mainSource.PlayOneShot(sound);
+        }
+        catch
+        {
+            //NOTHING
+        }
         switch (selected)
         {
             case 1:

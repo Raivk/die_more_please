@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour {
 
     private float defaultAbber;
 
+    public AudioSource mainSource;
+
     [HideInInspector]
     public int nextInc = 1;
 
@@ -140,6 +142,15 @@ public class PlayerController : MonoBehaviour {
                 {
                     if (oc.isPlayer(playerNumber))
                     {
+                        try
+                        {
+                            mainSource.Stop();
+                            mainSource.PlayOneShot(oc.sounds[Random.Range(0, oc.sounds.Length)]);
+                        }
+                        catch
+                        {
+                            //NOTHING
+                        }
                         respawn(nextInc);
                         oc.changeColor(playerNumber);
                     }
@@ -175,6 +186,11 @@ public class PlayerController : MonoBehaviour {
         {
             collideground = true;
         }
+    }
+
+    public void activate()
+    {
+        activated = true;
     }
 
     public void deactivate()

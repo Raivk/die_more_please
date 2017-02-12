@@ -30,6 +30,8 @@ public class ObstacleController : MonoBehaviour {
     public float nbTicks;
     public float delay_between_ticks;
 
+    public AudioClip[] sounds;
+
     IEnumerator swapColor(Color togo, Color glow)
     {
         Color from = renderers[0].color;
